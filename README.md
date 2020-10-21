@@ -38,3 +38,7 @@ airflow backfill -sd . kmeans_with_workflow  -s 2015-06-01 -e 2015-06-07
 ```
 
 open http://127.0.0.1:8080 on browser, and enter WEB UI to watch DAG graph and run.
+
+
+To be fixed:
+Trigger workflow run on the web GUI, will raise an error "not find iris.csv", need to be investigated.
