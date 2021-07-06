@@ -12,13 +12,7 @@ For demostrating how to apply workflow to machine learning system.
 based on python 3.6.8
 
 ```
-# airflow needs a home, ~/airflow is the default,
-# but you can lay foundation somewhere else if you prefer
-# (optional)
-export AIRFLOW_HOME=~/airflow
-
-# install dependency
-pip install -r requirement.txt
+##############################  DB ################################
 
 # set option for mysql
 vim /etc/mysql/my.cnf
@@ -42,9 +36,22 @@ CREATE DATABASE airflow CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 Note:
 https://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html#setting-up-a-mysql-database
 
+##############################  AIRFLOW ################################
+
+# airflow needs a home, ~/airflow is the default,
+# but you can lay foundation somewhere else if you prefer
+# (optional)
+export AIRFLOW_HOME=~/win10/mine/airflow/
+
+# install dependency
+pip install -r requirement.txt
+
+# FOLLOW setup.sh to install airflow， From
+https://airflow.apache.org/docs/apache-airflow/stable/start/local.html
 
 # add mysql connection to airflow.cfg
-vim ~/airflow/airflow.cfg
+vim $AIRFLOW_HOME/airflow.cfg
+
 set parameter:
 sql_alchemy_conn = mysql://{USERNAME}:{PASSWORD}@{MYSQL_HOST}:3306/airflow
 
@@ -56,10 +63,7 @@ https://airflow.apache.org/docs/apache-airflow/1.10.12/howto/initialize-database
 
 
 # initialize the database
-airflow initdb
-
-# deliver this file to airflow dags folder
-cp -f kmeans_with_workflow.py  ~/airflow/dags
+airflow db init
 
 # startup scheduler
 airflow scheduler
@@ -67,9 +71,15 @@ airflow scheduler
 # startup web UI
 airflow webserver -p 8080
 
+##############################  PUBLISH FLOW ################################
+
+# deliver this file to airflow dags folder
+mkdir -p $AIRFLOW_HOME/dags
+cp -f kmeans_with_workflow.py  $AIRFLOW_HOME/dags
 
 # run on this project folder
-airflow backfill -sd . kmeans_with_workflow  -s 2015-06-01 -e 2015-06-07
+airflow dags backfill kmeans_with_workflow1  -s 2015-06-01 -e 2015-06-07
+
 
 ```
 

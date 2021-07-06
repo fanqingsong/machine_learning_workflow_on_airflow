@@ -55,7 +55,7 @@ def str_column_to_int(dataset, column):
 
 def getRawIrisData(**context):
     # Load iris dataset
-    filename = '/root/airflow/iris.csv'
+    filename = '/root/win10/mine/machine_learning_workflow_on_airflow/iris.csv'
     dataset = load_csv(filename)
     print('Loaded data file {0} with {1} rows and {2} columns'.format(filename, len(dataset), len(dataset[0])))
     print(dataset[0])
