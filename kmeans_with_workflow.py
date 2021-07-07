@@ -19,9 +19,9 @@ default_args = {
 }
 
 dag = DAG(
-    dag_id='kmeans_with_workflow1',
+    dag_id='kmeans_with_workflow',
     default_args=default_args,
-    # schedule_interval="@once",
+    schedule_interval=None,
     # schedule_interval="00, *, *, *, *"  # support cron format
     # schedule_interval=timedelta(minutes=1)  # every minute
 )
