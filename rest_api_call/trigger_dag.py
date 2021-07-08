@@ -2,22 +2,27 @@ import requests
 import json
 from pprint import pprint
 from datetime import datetime
+import sched, time
 
-# datetime object containing current date and time
-now = datetime.now()
- 
-print("now =", now)
+def get_execution_time():
+    # datetime object containing current date and time
+    now = datetime.utcnow()
+    
+    print("now =", now)
 
-dt_string = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-print("date and time =", dt_string)	
+    dt_string = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    print("date and time =", dt_string)	
+
+    return dt_string
 
 dag_id = "kmeans_with_workflow"
-dag_run_id = "A_TEST_DAG_RUN4"
 
 def trigger_dag():
+    exec_time = get_execution_time()
+
     data = {
         # "dag_run_id": dag_run_id,
-        "execution_date": dt_string,
+        "execution_date": exec_time,
         # "execution_date": None,
         # "state": None,
         "conf": { }
@@ -33,8 +38,14 @@ def trigger_dag():
 
     pprint(result.content.decode('utf-8'))
 
+    result = json.loads(result.content.decode('utf-8'))
 
-def get_dag_run():
+    pprint(result)
+
+    return result
+
+
+def get_dag_run(dag_run_id):
     result = requests.get(
     f"http://localhost:8080/api/v1/dags/{dag_id}/dagRuns/{dag_run_id}",
     auth=("admin", "admin"))
@@ -42,5 +53,29 @@ def get_dag_run():
     pprint(result.content.decode('utf-8'))
 
 
-trigger_dag()
-get_dag_run()
+    result = json.loads(result.content.decode('utf-8'))
+
+    pprint(result)
+
+    return result
+
+result = trigger_dag()
+dag_run_id = result["dag_run_id"]
+
+s = sched.scheduler(time.time, time.sleep)
+
+def watch_dag_until_complete():
+    result = get_dag_run(dag_run_id)
+    state = result["state"]
+
+    if state != "success":
+        s.enter(1, 1, watch_dag_until_complete)
+    else:
+        print("dag completed!")
+
+s.enter(1, 1, watch_dag_until_complete)
+s.run()
+
+
+
+
